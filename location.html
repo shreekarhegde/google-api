@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>location</title>
+    </head>
+    <body>
+        <button id='get'>Get my location</button><br/>
+        <h2 id='lat'></h2>
+        <h2 id='lon'></h2>
+        <h2 id='temp'></h2><br/>
+        <h2 id="map-canvas"></h2>
+        
+        <script src='./js/axios.js'></script>
+        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+
+        <script>
+            let apiKey = 'cdd504ef312fd24c264fd750b228670e'
+            let tempHandle = document.getElementById('temp')
+            let getHandle = document.getElementById('get');
+            //let h2Handle = document.getElementById('display')
+            let latHandle = document.getElementById('lat');
+            let lonHandle = document.getElementById('lon');
+            let imgHandle  = document.getElementById('map-canvas');
+             
+            function findLocation(lat,lon){
+                
+           // let h2 = document.createElement('h2');
+            let latitude = document.createTextNode(lat);
+            let longitude = document.createTextNode(lon);
+            latHandle.innerHTML = 'lat -';
+            latHandle.appendChild(latitude);
+            lonHandle.innerHTML = 'lon -';
+            lonHandle.appendChild(longitude)
+            let url = `https://api.darksky.net/forecast/cdd504ef312fd24c264fd750b228670e/${lat},${lon}`
+            axios.get(url).then((Response) => {
+
+             let result = Response.data;
+             console.log(result)
+            let currentTemperature =(result.currently.temperature-32) * (5/9);
+             tempHandle.innerHTML = `Current temperature is ${Math.round(currentTemperature*10)/10}`
+            })
+            var img = new Image();
+
+             img.src = `http://maps.googleapis.com/maps/api/staticmap?center=${lat},${lon}&zoom=20&size=300x300&sensor=true&visualRefresh=true`;
+
+            imgHandle.appendChild(img);
+           }
+            getHandle.addEventListener('click',function(){
+                navigator.geolocation.getCurrentPosition(function(position) {
+                findLocation(position.coords.latitude, position.coords.longitude);
+       });
+
+            },false)
+            
+         </script>
+        
+    </body>
+</html>
